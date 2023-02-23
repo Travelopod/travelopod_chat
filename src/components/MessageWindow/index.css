@@ -1,0 +1,157 @@
+.message-window {
+  float: right;
+  height: 100vh;
+  width: 63%;
+}
+
+.message-window>* {
+  float: right;
+}
+
+.message-window .info {
+  width: calc(100% - 0.1px);
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.message-window .contact-thumbnail-container {
+  width: 80%;
+  border-right: none;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  column-gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.contact-thumbnail-container * {
+  display: inline-block;
+}
+
+.contact-thumbnail-container .user-info {
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.5rem;
+}
+
+.message-window .send {
+  height: 50px;
+  width: 100%;
+  background-color: #eee;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  width: calc(63% - 4rem);
+  bottom: 4rem;
+}
+
+.chats li:hover {
+  background-color: #4784de;
+  color: white !important;
+  border-radius: 10px;
+}
+
+.chats li:hover .message,
+.chats li:hover .time {
+  color: white !important;
+}
+
+.chat {
+  padding: 1rem;
+  background-color: #eee;
+  width: 100%;
+  margin-top: 2rem;
+  border-radius: 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: calc(100vh - 220px);
+}
+
+.chat-messages-wrapper {
+  overflow: auto;
+  height: calc(100vh - 300px);
+  padding: 1rem;
+  padding-bottom: 1rem;
+}
+
+
+.chat .sendersMessage {
+  cursor: auto;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  background: rgb(255 255 255);
+  border-radius: 15px 15px 15px 0px;
+  overflow: hidden;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  width: fit-content;
+  max-width: 70%;
+
+}
+
+.chat .agentMessage {
+  margin: 1.5rem 0;
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+
+}
+
+.chat .agentMessage>span {
+  background: rgb(255 255 255);
+  font-size: 16px;
+  font-weight: 400;
+  border-radius: 15px 15px 0px;
+  padding: 1rem;
+  cursor: auto;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 400;
+  max-width: 50%;
+}
+
+.chats {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
+}
+
+.chats li {
+  height: 80px;
+  width: 95%;
+  display: flex;
+  align-items: center;
+  column-gap: 1rem;
+  line-height: 20px;
+  padding: 0 12px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+/* .chats li>* {
+  display: inline-block;
+} */
+
+.chats li .details {
+  width: calc(100% - 76px);
+}
+
+/* emoji */
+.emoji {
+  cursor: pointer;
+}
+
+.emoji-picker {
+  position: absolute;
+  bottom: 100%;
+}
+
+.send-message {
+  cursor: pointer;
+}

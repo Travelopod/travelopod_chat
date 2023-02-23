@@ -1,0 +1,265 @@
+.info .chatname {
+  margin-top: 17px;
+  margin-left: 5px;
+  display: inline-block;
+}
+
+.info .edit {
+  height: 100%;
+  display: inline-block;
+}
+
+.info .edit * {
+  display: inline-block;
+}
+
+.info .searchchat {
+  width: 30px;
+  height: 30px;
+  border: 4px solid black;
+  display: inline-block;
+  border-radius: 50%;
+  margin-top: 6px;
+  transform: scale(0.3);
+}
+
+.info .searchchat::before {
+  content: "";
+  height: 30px;
+  width: 4px;
+  margin-top: 21px;
+  margin-left: -9px;
+  display: inline-block;
+  background-color: black;
+  transform: rotate(45deg);
+}
+
+.attachment {
+  background-image: url("https://image.flaticon.com/icons/svg/55/55957.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: 0px 0px;
+  width: 20px;
+  height: 30px;
+  margin-top: 12px;
+  transform: rotate(-90deg);
+}
+
+.send input {
+  height: 30px;
+  font-size: 18px;
+  width: calc(100% - 136px);
+  border-radius: 5px;
+  border: none;
+  padding: 4px 14px;
+  padding-left: 14px;
+}
+
+.send input:focus {
+  outline: none;
+}
+
+.emoji,
+.mic {
+  width: 50px;
+  filter: invert;
+}
+
+body {
+  background-color: #cbd0d3;
+  font-family: "Questrial", sans-serif;
+}
+
+.sidebar {
+  float: left;
+  height: 100vh;
+  width: 32%;
+}
+
+.name {
+  display: block;
+}
+
+.read-last-seen {
+  float: right;
+  margin-top: -15px;
+  font-size: 10px;
+  color: grey;
+}
+
+.details .message {
+  color: grey;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 80%;
+  display: block;
+}
+
+.user-thumbnail-container {
+  height: 50px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+
+.user-thumbnail-container>div {
+  display: flex;
+  align-items: center;
+  column-gap: 1rem;
+}
+
+.user-thumbnail-container * {
+  display: inline-block;
+}
+
+.user-thumbnail {
+  float: left;
+  width: 60px;
+  height: 60px;
+  background-color: rgb(146, 170, 183);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  line-height: 1;
+  margin: 0px;
+  font-weight: 700;
+  color: rgb(255, 255, 255);
+  font-size: 20px;
+  background-size: cover;
+}
+
+.user-thumbnail:hover {
+  cursor: pointer;
+}
+
+.user-thumbnail-container .user-info {
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.5rem;
+}
+
+.salutation {
+  color: #a1a4af;
+}
+
+.edit * {
+  color: #555;
+  float: right;
+  margin: 10px;
+  font-size: 30px;
+  border-radius: 50%;
+  background-color: #f5f5f5;
+  padding: 0.25rem 0.5rem;
+}
+
+.edit *:hover {
+  cursor: pointer;
+}
+
+.edit {
+  float: right;
+}
+
+.icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  text-align: center;
+  padding: 0.15rem;
+  font-size: 25px;
+  color: #adadad;
+}
+
+.search input {
+  margin-left: 10px;
+  margin-right: 10px;
+  border-radius: 5px;
+  height: 30px;
+  border: 0.4px solid lightgrey;
+  padding: 5px;
+  width: calc(100% - 55px);
+  background: url("https://cdn1.iconfinder.com/data/icons/hawcons/32/698627-icon-111-search-512.png") no-repeat 7px 2px;
+  background-size: 20px 20px;
+  padding-left: 30px;
+  background-position-y: center;
+}
+
+.search input:focus {
+  outline: none;
+}
+
+.search input:focus::-webkit-input-placeholder {
+  color: transparent;
+}
+
+.recent {
+  overflow: auto;
+  height: calc(100vh - 260px);
+  margin-top: 2rem;
+  width: calc(100% - 8px);
+}
+
+
+.name {
+  display: block;
+}
+
+.read-last-seen {
+  float: right;
+  margin-top: -15px;
+  font-size: 12px;
+  color: grey;
+}
+
+.active-last-seen {
+  float: right;
+  margin-top: -15px;
+  font-size: 12px;
+  color: green;
+}
+
+.active-last-seen::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 7.5px;
+  margin-right: 5px;
+  background-color: green;
+  margin-top: 15px;
+
+}
+
+.details .message {
+  color: grey;
+  font-size: 14px;
+}
+
+/* scrollbar styling */
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey;
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #ccd1d3;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: grey;
+}
