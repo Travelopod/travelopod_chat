@@ -4,10 +4,25 @@ import "./index.css";
 export default function SearchBar({ setOpenChatMessages }) {
 	const [searchedContact, setSearchedContact] = React.useState("");
 	const [contactDetails, setContactDetails] = React.useState([]);
+	const [chatContactLimit, setChatContactLimit] = React.useState(10);
+
+	const scrollRef = React.useRef(null);
+	const contactsScrollHandler = () => {
+		if (scrollRef && scrollRef.current !== null) {
+			let movedScroll = scrollRef.current.scrollTop;
+			let scrollHeight = scrollRef.current.scrollHeight;
+			let elementHeight = scrollRef.current.clientHeight;
+			// scrollHeight remains same irrespective of device height while elementHeight changes with device height
+			if (scrollHeight - elementHeight === movedScroll) {
+				// we will know, it has reached the end of scrollbar and we would increment chatContactLimit value by 10
+				setChatContactLimit(chatContactLimit + 10);
+			}
+		}
+	};
 
 	useEffect(() => {
 		fetch(
-			"https://api.interakt.ai/v1/organizations/ec245e6c-6ed8-46a4-90bf-6355a257deb1/chats/?type=active&limit=10&assigned=&agentId=922a420e-ae7e-405e-b77c-669fa8f35d2f&offset=0&sortBy=desc",
+			`https://api.interakt.ai/v1/organizations/ec245e6c-6ed8-46a4-90bf-6355a257deb1/chats/?type=active&limit=${chatContactLimit}&assigned=&agentId=922a420e-ae7e-405e-b77c-669fa8f35d2f&offset=0&sortBy=desc`,
 			{
 				headers: {
 					Authorization: "Token cc3432eb05b21d5e389b6c4ab51001ff2472380d",
@@ -16,8 +31,8 @@ export default function SearchBar({ setOpenChatMessages }) {
 		)
 			.then(response => response.json())
 			.then(data => data.results && setContactDetails(data.results.data));
-	}, []);
-	
+	}, [chatContactLimit]);
+
 	const filteredItems =
 		searchedContact !== "" &&
 		contactDetails.filter(contact =>
@@ -53,7 +68,7 @@ export default function SearchBar({ setOpenChatMessages }) {
 				/>
 			</div>
 			{/* recent chats */}
-			<div className="recent">
+			<div className="recent" ref={scrollRef} onScroll={contactsScrollHandler}>
 				<ul className="chats">
 					{[
 						...(filteredItems.length
@@ -84,9 +99,11 @@ export default function SearchBar({ setOpenChatMessages }) {
 									<span className="name">
 										{contact.customer_id.traits.name}
 									</span>
+									{/* TODO: Fetch API to check if last message was read */}
 									<span
 										className={
-											contact.last_message.message_status === "Read"
+											contact.last_message.message_status === "Delivered" ||
+											contact.last_message.message_status === "Sent"
 												? "read-last-seen"
 												: "active-last-seen"
 										}

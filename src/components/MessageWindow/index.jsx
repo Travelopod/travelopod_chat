@@ -127,7 +127,6 @@ function MessageWindow({ openChatMessages }) {
 export default MessageWindow;
 
 function renderMessage(message_content_type, message) {
-	console.log(message);
 	switch (message_content_type) {
 		case "Text":
 			return (
