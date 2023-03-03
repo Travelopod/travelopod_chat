@@ -9,8 +9,6 @@ export default function Home() {
 	const [openChatMessages, setOpenChatMessages] = useState(null);
 	const [contactMessageInfo, setContactMessageInfo] = useState([]);
 	const [email, setEmail] = useState("");
-	// ToDo: remove this name state when email value is used in fetch Data
-	const [name, setName] = useState("");
 	const [agent, setAgent] = useState({});
 
 	const props = {
@@ -19,7 +17,6 @@ export default function Home() {
 		setOpenChatMessages,
 		setContactMessageInfo,
 		agent,
-		name,
 	};
 
 	useEffect(() => {
@@ -38,7 +35,10 @@ export default function Home() {
 				const userData = await userResponse.json();
 				setEmail(userData.data.email);
 				// TODO: remove this userName when using email
-				setName(userData.data.firstName + " " + userData.data.lastName);
+				localStorage.setItem(
+					"userName",
+					userData.data.firstName + " " + userData.data.lastName
+				);
 				const agentResponse = await fetch(
 					"https://api.interakt.ai/v1/organizations/org-channel-agents/",
 					{

@@ -11,6 +11,7 @@ export default function Logout() {
 	function handleGoogleSignOut() {
 		alert("Are you sure you want to sign out?");
 		localStorage.removeItem("agent");
+		localStorage.removeItem("userName");
 		navigate("/login");
 	}
 

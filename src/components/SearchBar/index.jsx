@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import "./index.css";
 import anonymousUser from "../../assets/icon/anonymousUser.svg";
 
-export default function SearchBar({ setOpenChatMessages, agent, name }) {
+export default function SearchBar({ setOpenChatMessages, agent }) {
 	const [searchedContact, setSearchedContact] = React.useState("");
 	const [contactDetails, setContactDetails] = React.useState([]);
 	const [chatContactLimit, setChatContactLimit] = React.useState(10);
@@ -12,6 +12,9 @@ export default function SearchBar({ setOpenChatMessages, agent, name }) {
 
 	const user =
 		localStorage.getItem("agent") && JSON.parse(localStorage.getItem("agent"));
+
+	const userName = localStorage.getItem("userName");
+
 	const contactsScrollHandler = () => {
 		if (scrollRef && scrollRef.current !== null) {
 			let movedScroll = scrollRef.current.scrollTop;
@@ -66,13 +69,13 @@ export default function SearchBar({ setOpenChatMessages, agent, name }) {
 					<div className="user-thumbnail">
 						{/* {userProfile && userProfile.fullName[0]} */}
 
-						{userProfile && name[0]}
+						{userProfile && userName[0]}
 					</div>
 					<div className="user-info">
 						<span className="salutation">Hello</span>
 						<span className="username">
 							{/* {userProfile && userProfile.fullName} */}
-							{userProfile && name}
+							{userProfile && userName}
 						</span>
 					</div>
 				</div>
