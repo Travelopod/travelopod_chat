@@ -1,12 +1,18 @@
 import React, { useEffect } from "react";
 import "./index.css";
+import anonymousUser from "../../assets/icon/anonymousUser.svg";
 
-export default function SearchBar({ setOpenChatMessages }) {
+export default function SearchBar({ setOpenChatMessages, agent }) {
 	const [searchedContact, setSearchedContact] = React.useState("");
 	const [contactDetails, setContactDetails] = React.useState([]);
 	const [chatContactLimit, setChatContactLimit] = React.useState(10);
+	const [showLoader, setLoader] = React.useState(false);
 
 	const scrollRef = React.useRef(null);
+
+	const user =
+		localStorage.getItem("agent") && JSON.parse(localStorage.getItem("agent"));
+
 	const contactsScrollHandler = () => {
 		if (scrollRef && scrollRef.current !== null) {
 			let movedScroll = scrollRef.current.scrollTop;
@@ -14,23 +20,28 @@ export default function SearchBar({ setOpenChatMessages }) {
 			let elementHeight = scrollRef.current.clientHeight;
 			// scrollHeight remains same irrespective of device height while elementHeight changes with device height
 			if (scrollHeight - elementHeight === movedScroll) {
-				// we will know, it has reached the end of scrollbar and we would increment chatContactLimit value by 10
+				// we will know, it has reached the end of scrollbar and we would increment chatContactLimit value by 10.
 				setChatContactLimit(chatContactLimit + 10);
+				setLoader(true);
 			}
 		}
 	};
 
 	useEffect(() => {
-		fetch(
-			`https://api.interakt.ai/v1/organizations/ec245e6c-6ed8-46a4-90bf-6355a257deb1/chats/?type=active&limit=${chatContactLimit}&assigned=&agentId=922a420e-ae7e-405e-b77c-669fa8f35d2f&offset=0&sortBy=desc`,
-			{
-				headers: {
-					Authorization: "Token cc3432eb05b21d5e389b6c4ab51001ff2472380d",
-				},
-			}
-		)
-			.then(response => response.json())
-			.then(data => data.results && setContactDetails(data.results.data));
+		agent &&
+			fetch(
+				`https://api.interakt.ai/v1/organizations/ec245e6c-6ed8-46a4-90bf-6355a257deb1/chats/?type=active&limit=${chatContactLimit}&assigned=&agentId=${agent.id}&offset=0&sortBy=desc`,
+				{
+					headers: {
+						Authorization: "Token cc3432eb05b21d5e389b6c4ab51001ff2472380d",
+					},
+				}
+			)
+				.then(response => response.json())
+				.then(data => {
+					data.results && setContactDetails(data.results.data);
+					setLoader(false);
+				});
 	}, [chatContactLimit]);
 
 	const filteredItems =
@@ -40,15 +51,27 @@ export default function SearchBar({ setOpenChatMessages }) {
 				.toLowerCase()
 				.match(searchedContact.toLowerCase())
 		);
+
+	const userProfile = user
+		? {
+				fullName: user.first_name + " " + user.last_name,
+				email: user.email,
+		  }
+		: null;
+
 	return (
 		<div className="sidebar">
 			{/* user-info */}
 			<div className="user-thumbnail-container">
 				<div>
-					<div className="user-thumbnail"></div>
+					<div className="user-thumbnail">
+						{userProfile && userProfile.fullName[0]}
+					</div>
 					<div className="user-info">
-						<span className="salutation">Good Morning</span>
-						<span className="username">Michelle Lawrence</span>
+						<span className="salutation">Hello</span>
+						<span className="username">
+							{userProfile && userProfile.fullName}
+						</span>
 					</div>
 				</div>
 				<div className="edit">
@@ -86,14 +109,22 @@ export default function SearchBar({ setOpenChatMessages }) {
 										id: contact.id,
 										name: contact.customer_id.traits.name,
 										lastSeen: lastSeen,
+										phoneNumber: contact.customer_id.phone_number,
+										countryCode: contact.customer_id.country_code,
 									})
 								}
 							>
 								<div className="user-thumbnail">
 									{/* check for string character*/}
-									{typeof contact.customer_id.traits.name[0] === "string" &&
+									{(typeof contact.customer_id.traits.name[0] === "string" &&
 										/[a-zA-Z]/gm.test(contact.customer_id.traits.name[0][0]) &&
-										contact.customer_id.traits.name[0].toUpperCase()}
+										contact.customer_id.traits.name[0].toUpperCase()) || (
+										<img
+											src={anonymousUser}
+											alt="anonymous_User"
+											width="20px"
+										/>
+									)}
 								</div>
 								<div className="details">
 									<span className="name">
@@ -117,16 +148,18 @@ export default function SearchBar({ setOpenChatMessages }) {
 							</li>
 						);
 					})}
+					{showLoader && <div class="loader" />}
 				</ul>
 			</div>
 		</div>
 	);
 }
 
+// finding msg time ago
 function getLastMessageTime(date) {
 	return msToTime(Date.now() - new Date(date).getTime());
 }
-// consverting milliseconds for time ago
+// converting milliseconds for time ago
 function msToTime(ms) {
 	// toFixed remove any decimal Points
 	let seconds = (ms / 1000).toFixed();
@@ -135,6 +168,6 @@ function msToTime(ms) {
 	let days = (ms / (1000 * 60 * 60 * 24)).toFixed();
 	if (seconds < 60) return seconds + " Sec";
 	else if (minutes < 60) return minutes + " Min";
-	else if (hours < 24) return hours + " Hrs";
-	else return days + " Days";
+	else if (hours < 24) return hours === "1" ? hours + " Hour" : hours + " Hrs";
+	else return days === "1" ? days + " Day" : days + " Days";
 }

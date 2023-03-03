@@ -1,0 +1,33 @@
+body {
+  background-color: #fff;
+}
+
+.loader {
+  width: 20px;
+  height: 20px;
+  margin: 0 auto;
+  border-top: 5px solid #EEEEEE;
+  border-right: 5px solid #1979c0;
+  border-bottom: 5px solid #1979c0;
+  border-left: 5px solid #1979c0;
+  border-radius: 100px;
+  animation: spin 1.5s infinite linear;
+}
+
+.message-loader {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto;
+  border-top: 5px solid #a3bfd4;
+  border-right: 5px solid #1979c0;
+  border-bottom: 5px solid #a3bfd4;
+  border-left: 5px solid #1979c0;
+  border-radius: 100px;
+  animation: spin 2.5s infinite linear;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}

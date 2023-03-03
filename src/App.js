@@ -1,11 +1,12 @@
-import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./routes/Home";
+import Login from "./routes/Login";
 
 function App() {
 	return (
 		<BrowserRouter>
 			<Routes>
-				<Route
+				{/* <Route
 					path="/"
 					element={
 						<>
@@ -13,8 +14,10 @@ function App() {
 							<Link to="/chat">Go to Chat Page</Link>
 						</>
 					}
-				/>
-				<Route path="/chat" element={<Home />} />
+				/> */}
+				<Route path="/authentication/redirect" element={<Home />} />
+
+				<Route exact path="/login" element={<Login />} />
 			</Routes>
 		</BrowserRouter>
 	);

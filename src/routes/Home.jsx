@@ -1,21 +1,74 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MessageWindow from "../components/MessageWindow";
 import SearchBar from "../components/SearchBar";
 import styled from "styled-components";
+import "./style.css";
+const AUTH_URL = "http://localhost:3040";
 
 export default function Home() {
 	const [openChatMessages, setOpenChatMessages] = useState(null);
 	const [contactMessageInfo, setContactMessageInfo] = useState([]);
+	const [email, setEmail] = useState("");
+	const [agent, setAgent] = useState({});
+
 	const props = {
 		openChatMessages,
 		contactMessageInfo,
 		setOpenChatMessages,
 		setContactMessageInfo,
+		agent,
 	};
+
+	useEffect(() => {
+		if (localStorage.getItem("agent")) {
+			setAgent(JSON.parse(localStorage.getItem("agent")));
+		}
+
+		async function fetchData() {
+			try {
+				const token = await fetchToken(window.location.search);
+				const userResponse = await fetch(`http://localhost:3040/users/me`, {
+					headers: {
+						Authorization: `bearer ${token.access}`,
+					},
+				});
+				const userData = await userResponse.json();
+				setEmail(userData.email);
+
+				const agentResponse = await fetch(
+					"https://api.interakt.ai/v1/organizations/org-channel-agents/",
+					{
+						headers: {
+							Authorization: `Token cc3432eb05b21d5e389b6c4ab51001ff2472380d`,
+						},
+					}
+				);
+				const agentData = await agentResponse.json();
+				// TODO: use email (state)variable here instead
+				const filteredAgent = agentData.data.agents.filter(
+					user => user.email === "ankur.seth@travelopod.com"
+				);
+				if (filteredAgent.length) {
+					setAgent(filteredAgent[0]);
+					localStorage.setItem("agent", JSON.stringify(filteredAgent[0]));
+				}
+			} catch (e) {
+				console.log(e);
+			}
+		}
+		fetchData();
+	}, []);
+
 	return (
 		<Wrapper>
-			<SearchBar {...props} />
-			<MessageWindow {...props} />
+			{Object.keys(agent).length ? (
+				<>
+					<SearchBar {...props} />
+					<MessageWindow {...props} />
+				</>
+			) : (
+				<div className="loader" />
+			)}
 		</Wrapper>
 	);
 }
@@ -28,3 +81,11 @@ export const Wrapper = styled.div`
 	margin: 1.5rem;
 	overflow: hidden;
 `;
+
+export async function fetchToken(search) {
+	const response = await fetch(`${AUTH_URL}/authentication/token${search}`);
+	if (response.status !== 200) {
+		throw new Error("unauthorized");
+	}
+	return await response.json();
+}
