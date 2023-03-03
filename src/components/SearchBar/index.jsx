@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import "./index.css";
 import anonymousUser from "../../assets/icon/anonymousUser.svg";
 
-export default function SearchBar({ setOpenChatMessages, agent }) {
+export default function SearchBar({ setOpenChatMessages, agent, name }) {
 	const [searchedContact, setSearchedContact] = React.useState("");
 	const [contactDetails, setContactDetails] = React.useState([]);
 	const [chatContactLimit, setChatContactLimit] = React.useState(10);
@@ -12,7 +12,6 @@ export default function SearchBar({ setOpenChatMessages, agent }) {
 
 	const user =
 		localStorage.getItem("agent") && JSON.parse(localStorage.getItem("agent"));
-
 	const contactsScrollHandler = () => {
 		if (scrollRef && scrollRef.current !== null) {
 			let movedScroll = scrollRef.current.scrollTop;
@@ -21,7 +20,7 @@ export default function SearchBar({ setOpenChatMessages, agent }) {
 			// scrollHeight remains same irrespective of device height while elementHeight changes with device height
 			if (scrollHeight - elementHeight === movedScroll) {
 				// we will know, it has reached the end of scrollbar and we would increment chatContactLimit value by 10.
-				setChatContactLimit(chatContactLimit + 10);
+				setTimeout(() => setChatContactLimit(chatContactLimit + 50), 500);
 				setLoader(true);
 			}
 		}
@@ -65,12 +64,15 @@ export default function SearchBar({ setOpenChatMessages, agent }) {
 			<div className="user-thumbnail-container">
 				<div>
 					<div className="user-thumbnail">
-						{userProfile && userProfile.fullName[0]}
+						{/* {userProfile && userProfile.fullName[0]} */}
+
+						{userProfile && name[0]}
 					</div>
 					<div className="user-info">
 						<span className="salutation">Hello</span>
 						<span className="username">
-							{userProfile && userProfile.fullName}
+							{/* {userProfile && userProfile.fullName} */}
+							{userProfile && name}
 						</span>
 					</div>
 				</div>

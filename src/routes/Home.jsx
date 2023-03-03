@@ -9,6 +9,8 @@ export default function Home() {
 	const [openChatMessages, setOpenChatMessages] = useState(null);
 	const [contactMessageInfo, setContactMessageInfo] = useState([]);
 	const [email, setEmail] = useState("");
+	// ToDo: remove this name state when email value is used in fetch Data
+	const [name, setName] = useState("");
 	const [agent, setAgent] = useState({});
 
 	const props = {
@@ -17,6 +19,7 @@ export default function Home() {
 		setOpenChatMessages,
 		setContactMessageInfo,
 		agent,
+		name,
 	};
 
 	useEffect(() => {
@@ -33,8 +36,9 @@ export default function Home() {
 					},
 				});
 				const userData = await userResponse.json();
-				setEmail(userData.email);
-
+				setEmail(userData.data.email);
+				// TODO: remove this userName when using email
+				setName(userData.data.firstName + " " + userData.data.lastName);
 				const agentResponse = await fetch(
 					"https://api.interakt.ai/v1/organizations/org-channel-agents/",
 					{
@@ -48,6 +52,7 @@ export default function Home() {
 				const filteredAgent = agentData.data.agents.filter(
 					user => user.email === "ankur.seth@travelopod.com"
 				);
+				// TODO: show error message if user not found in filteredAgent
 				if (filteredAgent.length) {
 					setAgent(filteredAgent[0]);
 					localStorage.setItem("agent", JSON.stringify(filteredAgent[0]));

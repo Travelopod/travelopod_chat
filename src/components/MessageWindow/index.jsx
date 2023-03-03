@@ -217,7 +217,7 @@ function renderMessage(message_content_type, message) {
 
 export const SendingLoader = () => {
 	return (
-		<ul>
+		<ul className="sending-loader">
 			<li></li>
 			<li></li>
 			<li></li>

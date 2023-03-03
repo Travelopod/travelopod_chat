@@ -164,7 +164,7 @@
 
 /* sending-loader */
 
-.chat ul {
+.chat .sending-loader {
   margin: 0;
   display: flex;
   position: relative;
@@ -173,7 +173,7 @@
   padding: 0;
 }
 
-.chat ul li {
+.chat .sending-loader li {
   list-style: none;
   width: 10px;
   height: 10px;
@@ -197,23 +197,23 @@
   }
 }
 
-.chat ul li:nth-child(1) {
+.chat .sending-loader li:nth-child(1) {
   animation-delay: 0.45s;
 
 }
 
-.chat ul li:nth-child(2) {
+.chat .sending-loader li:nth-child(2) {
   animation-delay: 0.6s;
 }
 
-.chat ul li:nth-child(3) {
+.chat .sending-loader li:nth-child(3) {
   animation-delay: 0.3s;
 }
 
-.chat ul li:nth-child(4) {
+.chat .sending-loader li:nth-child(4) {
   animation-delay: 0s;
 }
 
-.chat ul li:nth-child(5) {
+.chat .sending-loader li:nth-child(5) {
   animation-delay: 0.1s;
 }
