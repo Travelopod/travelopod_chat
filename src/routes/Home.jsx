@@ -3,6 +3,7 @@ import MessageWindow from "../components/MessageWindow";
 import SearchBar from "../components/SearchBar";
 import styled from "styled-components";
 import "./style.css";
+import { useNavigate } from "react-router-dom";
 const AUTH_URL = "http://localhost:3040";
 
 export default function Home() {
@@ -10,6 +11,7 @@ export default function Home() {
 	const [contactMessageInfo, setContactMessageInfo] = useState([]);
 	const [email, setEmail] = useState("");
 	const [agent, setAgent] = useState({});
+	const navigate = useNavigate();
 
 	const props = {
 		openChatMessages,
@@ -32,6 +34,7 @@ export default function Home() {
 						Authorization: `bearer ${token.access}`,
 					},
 				});
+				token && localStorage.setItem("token", token.access);
 				const userData = await userResponse.json();
 				setEmail(userData.data.email);
 				// TODO: remove this userName when using email
@@ -63,6 +66,12 @@ export default function Home() {
 		}
 		fetchData();
 	}, []);
+
+	let accessToken = localStorage.getItem("token");
+	useEffect(() => {
+		// waits for 1 second before redirecting to login page, if token not found.
+		setTimeout(() => !accessToken && navigate("/login"), 1000);
+	}, [accessToken]);
 
 	return (
 		<Wrapper>

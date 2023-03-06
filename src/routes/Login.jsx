@@ -1,13 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
-// import GoogleLogin from "react-google-login";
 import logo from "../assets/images/logo.jpg";
 import GoogleSignInButton from "../components/GoogleSignInButton";
+import { useNavigate } from "react-router-dom";
 
 const CLIENT_ID =
 	"1001822469952-nlh1v2vm9v7pnl78tobm78lior6c092h.apps.googleusercontent.com";
 
 export default function Login() {
+	const navigate = useNavigate();
+	let token = localStorage.getItem("token");
+
+	useEffect(() => {
+		token && navigate("/authentication/redirect");
+	}, [token]);
+
 	return (
 		<LoginWrapper>
 			<img src={logo} alt="travelopod" />

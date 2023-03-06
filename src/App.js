@@ -1,20 +1,18 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import Home from "./routes/Home";
 import Login from "./routes/Login";
 
 function App() {
+	let token = localStorage.getItem("token");
 	return (
 		<BrowserRouter>
 			<Routes>
-				{/* <Route
+				<Route
 					path="/"
 					element={
-						<>
-							<h2>HomePage</h2>
-							<Link to="/chat">Go to Chat Page</Link>
-						</>
+						<Navigate to={token ? "/authentication/redirect" : "/login"} />
 					}
-				/> */}
+				/>
 				<Route path="/authentication/redirect" element={<Home />} />
 
 				<Route exact path="/login" element={<Login />} />

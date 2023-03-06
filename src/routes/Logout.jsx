@@ -12,6 +12,7 @@ export default function Logout() {
 		alert("Are you sure you want to sign out?");
 		localStorage.removeItem("agent");
 		localStorage.removeItem("userName");
+		localStorage.removeItem("token");
 		navigate("/login");
 	}
 
