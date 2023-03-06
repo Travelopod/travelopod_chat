@@ -4,9 +4,6 @@ import logo from "../assets/images/logo.jpg";
 import GoogleSignInButton from "../components/GoogleSignInButton";
 import { useNavigate } from "react-router-dom";
 
-const CLIENT_ID =
-	"1001822469952-nlh1v2vm9v7pnl78tobm78lior6c092h.apps.googleusercontent.com";
-
 export default function Login() {
 	const navigate = useNavigate();
 	let token = localStorage.getItem("token");
@@ -19,7 +16,7 @@ export default function Login() {
 		<LoginWrapper>
 			<img src={logo} alt="travelopod" />
 			<h1>Travelopod-Chat</h1>
-			<GoogleSignInButton clientId={CLIENT_ID} />
+			<GoogleSignInButton />
 		</LoginWrapper>
 	);
 }

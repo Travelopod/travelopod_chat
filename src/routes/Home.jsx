@@ -4,7 +4,7 @@ import SearchBar from "../components/SearchBar";
 import styled from "styled-components";
 import "./style.css";
 import { useNavigate } from "react-router-dom";
-const AUTH_URL = "http://localhost:3040";
+const AUTH_URL = process.env.REACT_APP_AUTH_URL;
 
 export default function Home() {
 	const [openChatMessages, setOpenChatMessages] = useState(null);
@@ -29,11 +29,14 @@ export default function Home() {
 		async function fetchData() {
 			try {
 				const token = await fetchToken(window.location.search);
-				const userResponse = await fetch(`http://localhost:3040/users/me`, {
-					headers: {
-						Authorization: `bearer ${token.access}`,
-					},
-				});
+				const userResponse = await fetch(
+					`${process.env.REACT_APP_AUTH_URL}/users/me`,
+					{
+						headers: {
+							Authorization: `bearer ${token.access}`,
+						},
+					}
+				);
 				token && localStorage.setItem("token", token.access);
 				const userData = await userResponse.json();
 				setEmail(userData.data.email);
@@ -46,7 +49,7 @@ export default function Home() {
 					"https://api.interakt.ai/v1/organizations/org-channel-agents/",
 					{
 						headers: {
-							Authorization: `Token cc3432eb05b21d5e389b6c4ab51001ff2472380d`,
+							Authorization: `Token ${process.env.REACT_APP_INTERAKT_API_TOKEN}`,
 						},
 					}
 				);

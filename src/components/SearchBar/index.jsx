@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import "./index.css";
 import anonymousUser from "../../assets/icon/anonymousUser.svg";
 
-export default function SearchBar({ setOpenChatMessages, agent }) {
+export default function SearchBar({ setOpenChatMessages }) {
 	const [searchedContact, setSearchedContact] = React.useState("");
 	const [contactDetails, setContactDetails] = React.useState([]);
 	const [chatContactLimit, setChatContactLimit] = React.useState(10);
@@ -30,12 +30,12 @@ export default function SearchBar({ setOpenChatMessages, agent }) {
 	};
 
 	useEffect(() => {
-		agent &&
+		const fetchingContactList = () => {
 			fetch(
-				`https://api.interakt.ai/v1/organizations/ec245e6c-6ed8-46a4-90bf-6355a257deb1/chats/?type=active&limit=${chatContactLimit}&assigned=&agentId=${agent.id}&offset=0&sortBy=desc`,
+				`https://api.interakt.ai/v1/organizations/ec245e6c-6ed8-46a4-90bf-6355a257deb1/chats/?type=active&limit=${chatContactLimit}&assigned=&agentId=${user.id}&offset=0&sortBy=desc`,
 				{
 					headers: {
-						Authorization: "Token cc3432eb05b21d5e389b6c4ab51001ff2472380d",
+						Authorization: `Token ${process.env.REACT_APP_INTERAKT_API_TOKEN}`,
 					},
 				}
 			)
@@ -44,6 +44,12 @@ export default function SearchBar({ setOpenChatMessages, agent }) {
 					data.results && setContactDetails(data.results.data);
 					setLoader(false);
 				});
+		};
+		// Call fetchingMessages initially and every 30 seconds
+		const intervalId = setInterval(fetchingContactList(), 30000);
+
+		// Clean up the interval on unmount
+		return () => clearInterval(intervalId);
 	}, [chatContactLimit]);
 
 	const filteredItems =

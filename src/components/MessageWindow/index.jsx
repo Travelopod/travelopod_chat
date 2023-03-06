@@ -3,8 +3,10 @@ import "./index.css";
 import EmojiPicker from "emoji-picker-react";
 import sendIcon from "../../assets/icon/send-icon.svg";
 import selectEmoji from "../../assets/icon/emoji-happy.svg";
+import attachIcon from "../../assets/icon/attachment.svg";
 import anonymousUser from "../../assets/icon/anonymousUser.svg";
 import Logout from "../../routes/Logout";
+import FileUploaderModal from "../FileUploaderModal";
 
 function MessageWindow({ openChatMessages, agent }) {
 	// all the chat-messages for the specific customer
@@ -19,6 +21,7 @@ function MessageWindow({ openChatMessages, agent }) {
 
 	const [showLoader, setLoader] = React.useState(true);
 	const [sendingLoader, setSendingLoader] = React.useState(false);
+	const [showFileUpload, setShowFileUpload] = React.useState(false);
 
 	const id = openChatMessages ? openChatMessages.id : null;
 	const lastSeen = openChatMessages ? openChatMessages.lastSeen + " ago" : "";
@@ -44,15 +47,20 @@ function MessageWindow({ openChatMessages, agent }) {
 	}, [chatDetails]);
 
 	useEffect(() => {
-		fetchingMessages(id);
+		// Call fetchingMessages initially and every 30 seconds
+		const intervalId = setInterval(fetchingMessages(id), 30000);
+
+		// Clean up the interval on unmount
+		return () => clearInterval(intervalId);
 	}, [id]);
 
 	async function fetchingMessages(id) {
+		console.log("Fetching messages every 30second");
 		const response = await fetch(
 			`https://api.interakt.ai/v1/organizations/ec245e6c-6ed8-46a4-90bf-6355a257deb1/chats/${id}/bundled-conversation/?limit=100&offset=0`,
 			{
 				headers: {
-					Authorization: "Token cc3432eb05b21d5e389b6c4ab51001ff2472380d",
+					Authorization: `Token ${process.env.REACT_APP_INTERAKT_API_TOKEN}`,
 				},
 			}
 		);
@@ -69,8 +77,7 @@ function MessageWindow({ openChatMessages, agent }) {
 			fetch("https://api.interakt.ai/v1/public/message/", {
 				method: "POST",
 				headers: {
-					Authorization:
-						"Basic bTl0QUJoTEpNUDZxY2FiTWF0czB3M0ptbzNMbEJ0eVdZeFc2cUx3MmpDRTo=",
+					Authorization: `Basic ${process.env.REACT_APP_INTERAKT_BASIC_AUTH_TOKEN}`,
 				},
 				body: JSON.stringify({
 					countryCode: userCountryCode,
@@ -84,7 +91,6 @@ function MessageWindow({ openChatMessages, agent }) {
 				.then(response => response.json())
 				.then(data => {
 					// TODO: handle showing loader on left side or right side
-					console.log(data, "data");
 					setInputValue("");
 					setSendingLoader(true);
 					setTimeout(() => {
@@ -96,6 +102,12 @@ function MessageWindow({ openChatMessages, agent }) {
 				.catch(error => {
 					console.error("Error:", error);
 				});
+		}
+	};
+
+	const handleEnterPressed = e => {
+		if (e.key === "Enter") {
+			sendMessageHandler();
 		}
 	};
 
@@ -162,6 +174,9 @@ function MessageWindow({ openChatMessages, agent }) {
 					>
 						<img src={selectEmoji} alt="send-icon" width="40px" />
 					</span>
+					<span className="attach-icon" onClick={() => setShowFileUpload(true)}>
+						<img src={attachIcon} alt="attach-icon" width="40px" />
+					</span>
 					{showEmojiPicker && (
 						<span className="emoji-picker">
 							<EmojiPicker onEmojiClick={handleEmojiClick} />
@@ -173,6 +188,7 @@ function MessageWindow({ openChatMessages, agent }) {
 						value={inputValue}
 						onChange={handleInputChange}
 						ref={inputRef}
+						onKeyUp={handleEnterPressed}
 					/>
 
 					{/* <span className="mic"></span> */}
@@ -183,6 +199,17 @@ function MessageWindow({ openChatMessages, agent }) {
 
 				{/* POST MESSAGE - INPUT FIELD */}
 			</div>
+
+			{/* FileUpload */}
+
+			{showFileUpload && (
+				<FileUploaderModal
+					attachImagesHandler={images =>
+						images.length && setInputValue(...inputValue, ...images.join(","))
+					}
+					close={() => setShowFileUpload(false)}
+				/>
+			)}
 		</div>
 	);
 }

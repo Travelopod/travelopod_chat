@@ -1,9 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 
-function GoogleSignInButton({ clientId }) {
+function GoogleSignInButton() {
+	const LOGIN_URL = process.env.REACT_APP_LOGIN_URL;
 	return (
-		<a href="http://localhost:3040/authentication/start">
+		<a href={LOGIN_URL}>
 			<Button>Log In</Button>
 		</a>
 	);
