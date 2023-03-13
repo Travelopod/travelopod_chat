@@ -1,11 +1,14 @@
 import React, { useEffect } from "react";
 import "./index.css";
 import anonymousUser from "../../assets/icon/anonymousUser.svg";
+import styled from "styled-components";
 
 export default function SearchBar({ setOpenChatMessages }) {
 	const [searchedContact, setSearchedContact] = React.useState("");
 	const [contactDetails, setContactDetails] = React.useState([]);
 	const [chatContactLimit, setChatContactLimit] = React.useState(10);
+	const [selectedContactId, setSelectedContactId] = React.useState(null);
+
 	const [showLoader, setLoader] = React.useState(false);
 
 	const scrollRef = React.useRef(null);
@@ -66,7 +69,16 @@ export default function SearchBar({ setOpenChatMessages }) {
 				email: user.email,
 		  }
 		: null;
-
+	const selectHandler = (contact, lastSeen) => {
+		setOpenChatMessages({
+			id: contact.id,
+			name: contact.customer_id.traits.name,
+			lastSeen: lastSeen,
+			phoneNumber: contact.customer_id.phone_number,
+			countryCode: contact.customer_id.country_code,
+		});
+		setSelectedContactId(contact.id);
+	};
 	return (
 		<div className="sidebar">
 			{/* user-info */}
@@ -108,22 +120,21 @@ export default function SearchBar({ setOpenChatMessages }) {
 						...(filteredItems.length
 							? [...filteredItems]
 							: [...contactDetails]),
-					].map(contact => {
+					].map((contact, index) => {
 						let lastSeen = getLastMessageTime(
 							contact.last_customer_message_at_utc
 						);
+						// select first contact, if no contact is selected.
+						selectedContactId === null &&
+							contact &&
+							index === 0 &&
+							selectHandler(contact, lastSeen);
 						return (
-							<li
+							<SearchCard
 								key={contact.id}
-								onClick={() =>
-									setOpenChatMessages({
-										id: contact.id,
-										name: contact.customer_id.traits.name,
-										lastSeen: lastSeen,
-										phoneNumber: contact.customer_id.phone_number,
-										countryCode: contact.customer_id.country_code,
-									})
-								}
+								onClick={() => selectHandler(contact, lastSeen)}
+								contactId={contact.id}
+								selectedContactId={selectedContactId}
 							>
 								<div className="user-thumbnail">
 									{/* check for string character*/}
@@ -156,7 +167,7 @@ export default function SearchBar({ setOpenChatMessages }) {
 										{contact.last_message.message}
 									</span>
 								</div>
-							</li>
+							</SearchCard>
 						);
 					})}
 					{showLoader && <div class="loader" />}
@@ -182,3 +193,31 @@ function msToTime(ms) {
 	else if (hours < 24) return hours === "1" ? hours + " Hour" : hours + " Hrs";
 	else return days === "1" ? days + " Day" : days + " Days";
 }
+
+export const SearchCard = styled.li`
+	border-radius: 10px;
+	background-color: ${props =>
+		props.contactId === props.selectedContactId ? "#5086af" : "white"};
+	color: ${props =>
+		props.contactId === props.selectedContactId ? "white" : ""};
+	.message {
+		color: ${props =>
+			props.contactId === props.selectedContactId ? "white" : ""};
+	}
+	.active-last-seen {
+		color: ${props =>
+			props.contactId === props.selectedContactId ? "#83d483" : ""};
+		font-weight: ${props =>
+			props.contactId === props.selectedContactId ? "600" : ""};
+		::before {
+			background-color: ${props =>
+				props.contactId === props.selectedContactId ? "#83d483" : "green"};
+		}
+	}
+	.read-last-seen {
+		color: ${props =>
+			props.contactId === props.selectedContactId ? "white" : ""};
+		font-weight: ${props =>
+			props.contactId === props.selectedContactId ? "600" : ""};
+	}
+`;

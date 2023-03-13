@@ -70,12 +70,6 @@ export default function Home() {
 		fetchData();
 	}, []);
 
-	let accessToken = localStorage.getItem("token");
-	useEffect(() => {
-		// waits for 1 second before redirecting to login page, if token not found.
-		setTimeout(() => !accessToken && navigate("/login"), 1000);
-	}, [accessToken]);
-
 	return (
 		<Wrapper>
 			{Object.keys(agent).length ? (
