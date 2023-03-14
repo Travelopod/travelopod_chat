@@ -36,7 +36,6 @@
 }
 
 .message-window .send {
-  height: 50px;
   width: 100%;
   background-color: #eee;
   display: flex;
@@ -146,6 +145,11 @@
 .emoji,
 .attach-icon {
   cursor: pointer;
+  position: relative;
+}
+
+.emoji {
+  margin-top: -2.5rem;
 }
 
 .emoji-picker {

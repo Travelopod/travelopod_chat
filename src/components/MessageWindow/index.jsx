@@ -6,7 +6,7 @@ import selectEmoji from "../../assets/icon/emoji-happy.svg";
 import attachIcon from "../../assets/icon/attachment.svg";
 import anonymousUser from "../../assets/icon/anonymousUser.svg";
 import Logout from "../../routes/Logout";
-import FileUploaderModal from "../FileUploaderModal";
+import styled from "styled-components";
 
 function MessageWindow({ openChatMessages, agent }) {
 	// all the chat-messages for the specific customer
@@ -21,13 +21,41 @@ function MessageWindow({ openChatMessages, agent }) {
 
 	const [showLoader, setLoader] = React.useState(true);
 	const [sendingLoader, setSendingLoader] = React.useState(false);
-	const [showFileUpload, setShowFileUpload] = React.useState(false);
 
 	const id = openChatMessages ? openChatMessages.id : null;
 	const lastSeen = openChatMessages ? openChatMessages.lastSeen + " ago" : "";
 	const name = openChatMessages ? openChatMessages.name : "";
 	const userPhoneNumber = openChatMessages ? openChatMessages.phoneNumber : "";
 	const userCountryCode = openChatMessages ? openChatMessages.countryCode : "";
+	const [uplodedImages, setUploadImages] = useState([]);
+	const messageSendRef = useRef(null);
+
+	const handleFileChange = async event => {
+		event.preventDefault();
+		const formData = new FormData();
+		formData.append("uploadFile", event.target.files[0]);
+		try {
+			const response = await fetch(
+				"https://api.interakt.ai/v1/organizations/ec245e6c-6ed8-46a4-90bf-6355a257deb1/file/upload/?fileCategory=Inbox_agent_to_customer",
+				{
+					method: "POST",
+					body: formData,
+					headers: {
+						Authorization: `Token ${process.env.REACT_APP_INTERAKT_API_TOKEN}`,
+					},
+				}
+			);
+			const data = await response.json();
+
+			if (data.result && messageSendRef && messageSendRef.current) {
+				setUploadImages([...uplodedImages, data["media-url"]]);
+				messageSendRef.current.offsetHeight =
+					messageSendRef.current.offsetHeight + 50;
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	};
 
 	const handleInputChange = event => {
 		setInputValue(event.target.value);
@@ -74,6 +102,19 @@ function MessageWindow({ openChatMessages, agent }) {
 	const sendMessageHandler = () => {
 		// setLoader(true);
 		if (agent.country_code) {
+			let dataToSend = {};
+			if (uplodedImages.length) {
+				dataToSend = {
+					message_content_type: "Image",
+					media_url: uplodedImages[0],
+					message: inputValue,
+				};
+			} else {
+				dataToSend = {
+					message: inputValue,
+					message_content_type: "Text",
+				};
+			}
 			fetch("https://api.interakt.ai/v1/public/message/", {
 				method: "POST",
 				headers: {
@@ -83,9 +124,7 @@ function MessageWindow({ openChatMessages, agent }) {
 					countryCode: userCountryCode,
 					phoneNumber: userPhoneNumber,
 					type: "Text",
-					data: {
-						message: inputValue,
-					},
+					data: { ...dataToSend },
 				}),
 			})
 				.then(response => response.json())
@@ -111,6 +150,9 @@ function MessageWindow({ openChatMessages, agent }) {
 		}
 	};
 
+	const deleteHandler = imageToDelete => {
+		setUploadImages(uplodedImages.filter(image => image !== imageToDelete));
+	};
 	return (
 		<div className="message-window">
 			{/* CONTACT DETAILS */}
@@ -155,9 +197,7 @@ function MessageWindow({ openChatMessages, agent }) {
 											: "agentMessage"
 									}
 								>
-									<span>
-										{renderMessage(chat.message_content_type, chat.message)}
-									</span>
+									<span>{renderMessage(chat)}</span>
 								</div>
 							);
 						})}
@@ -167,30 +207,54 @@ function MessageWindow({ openChatMessages, agent }) {
 				{/* MESSAGES BODY*/}
 
 				{/* POST MESSAGE - INPUT FIELD */}
-				<div className="send">
+				<div className="send" ref={messageSendRef}>
 					<span
 						className="emoji"
 						onClick={() => setShowEmojiPicker(!showEmojiPicker)}
 					>
-						<img src={selectEmoji} alt="send-icon" width="40px" />
+						<AttachImg src={selectEmoji} alt="send-icon" width="40px" />
 					</span>
-					<span className="attach-icon" onClick={() => setShowFileUpload(true)}>
+					<span className="attach-icon">
 						<img src={attachIcon} alt="attach-icon" width="40px" />
+						<FileUploader
+							type="file"
+							onChange={handleFileChange}
+							name="uploadFile"
+							style={{ cursor: "pointer" }}
+						/>
 					</span>
 					{showEmojiPicker && (
 						<span className="emoji-picker">
 							<EmojiPicker onEmojiClick={handleEmojiClick} />
 						</span>
 					)}
-					<input
-						type="text"
-						placeholder="Type a message"
-						value={inputValue}
-						onChange={handleInputChange}
-						ref={inputRef}
-						onKeyUp={handleEnterPressed}
-					/>
-
+					<InputWrapper>
+						<input
+							type="text"
+							placeholder="Type a message"
+							value={inputValue}
+							onChange={handleInputChange}
+							ref={inputRef}
+							onKeyUp={handleEnterPressed}
+						/>
+						{!!uplodedImages.length && (
+							<ImageWrapper>
+								{uplodedImages.map(image => {
+									return (
+										<div className="uploaded-image">
+											<img src={image} alt={image} />
+											<div
+												className="cross-icon"
+												onClick={() => deleteHandler(image)}
+											>
+												X
+											</div>
+										</div>
+									);
+								})}
+							</ImageWrapper>
+						)}
+					</InputWrapper>
 					{/* <span className="mic"></span> */}
 					<span className="sendmessage" onClick={sendMessageHandler}>
 						<img src={sendIcon} alt="send-icon" width="40px" />
@@ -199,42 +263,32 @@ function MessageWindow({ openChatMessages, agent }) {
 
 				{/* POST MESSAGE - INPUT FIELD */}
 			</div>
-
-			{/* FileUpload */}
-
-			{showFileUpload && (
-				<FileUploaderModal
-					attachImagesHandler={images =>
-						images.length && setInputValue(...inputValue, ...images.join(","))
-					}
-					close={() => setShowFileUpload(false)}
-				/>
-			)}
 		</div>
 	);
 }
 
 export default MessageWindow;
 
-function renderMessage(message_content_type, message) {
-	switch (message_content_type) {
+function renderMessage(message) {
+	switch (message.message_content_type) {
 		case "Text":
 			return (
 				<>
-					<span>{message}</span>
+					<span>{message.message}</span>
 				</>
 			);
 		case "Audio":
 			return (
 				<>
-					<audio src={message} controls />
+					<audio src={message.message} controls />
 				</>
 			);
-		case "CallUs":
-			const handleCallUs = () => console.log("callUs");
+		case "Image":
 			return (
 				<>
-					<button onClick={handleCallUs}>Call Us</button>
+					<img src={message.media_url} alt="message" />
+					<br />
+					<span>{message.message}</span>
 				</>
 			);
 		default:
@@ -252,3 +306,68 @@ export const SendingLoader = () => {
 		</ul>
 	);
 };
+export const FileUploader = styled.input`
+	width: 40px !important;
+	padding: 0 !important;
+	z-index: 1;
+	position: absolute;
+	opacity: 0;
+	left: 0;
+	top: 5px;
+`;
+
+export const AttachImg = styled.img`
+position: absolute;
+cursor: pointer;
+z-index: -1;
+}`;
+
+export const ImageWrapper = styled.div`
+	display: flex;
+	margin: 1rem;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	.uploaded-image {
+		position: relative;
+		border: 1px solid #c6c6c6;
+		border-radius: 6px;
+		padding: 1rem;
+		max-width: 40px;
+		overflow: hidden;
+		max-height: 40px;
+	}
+	.uploaded-image {
+		.cross-icon {
+			position: absolute;
+			z-index: 10000;
+			top: 0;
+			right: -2px;
+			border-radius: 50%;
+			border-color: white;
+			border: 1px solid white;
+			padding: 2px 6px;
+			font-size: 14px;
+			font-weight: 600;
+			background-color: grey;
+			color: white;
+			cursor: pointer;
+		}
+	}
+`;
+export const InputWrapper = styled.div`
+height: fit-content;
+font-size: 18px;
+width: calc(100% - 136px);
+border-radius: 5px;
+padding: 4px 14px;
+padding-left: 14px;
+display: flex;
+flex-direction: column;
+justify-content: flex-start;
+background-color: white;
+.input{
+	height: 30px;
+}
+
+}`;
